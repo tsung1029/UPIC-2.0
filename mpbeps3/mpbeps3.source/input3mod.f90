@@ -773,7 +773,6 @@
 ! this subroutine broadcasts namelists to other nodes
 ! namelists are equivalenced to a double precision array
       implicit none
-      print*, "in sendnml"
 ! broadcase namelist input3
       call PPBDCAST(ddin3,lnin3)
 ! broadcast namelist input3b
