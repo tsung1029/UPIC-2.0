@@ -17,6 +17,7 @@
 #CCOPTS = -O3 -Wall -std=c99
 
 #LOPTS = -lgomp
+LOPTS = -openmp
 #LEGACY =
 
 # Makefile Intel compiler with Mac OS X
@@ -49,6 +50,9 @@
 #CC = icc
 
 #OPTS90 = -O3
+#OPTS90 = -O3 -axAVX -qopt-report=5 -qopt-report-phase=vec
+#OPTS90 = -O3 -axAVX2 -qopt-report=5 -qopt-report-phase=vec
+#OPTS90 = -O3 -axMIC-AVX512 -qopt-report=5 -qopt-report-phase=vec
 #OPTS90 = -O3 -r8
 #OPTS90 = -O3 -CB -r8 -warn all -std90
 
@@ -62,11 +66,14 @@
 # Makefile gfortran compiler with Linux
 
 # OpenMPI
-MPIFC = mpif90 -fopenmp
-MPICC = mpicc -fopenmp
+#MPIFC = mpif90 -fopenmp
+#MPICC = mpicc -fopenmp
 
-FC90 = gfortran -fopenmp
-CC = gcc
+#FC90 = gfortran -fopenmp
+#CC = gcc
+
+PFC = f2py --fcompiler=gnu95
+PCC = f2py --compiler=unix
 
 OPTS90 = -O3
 #OPTS90 = -O3 -fdefault-real-8 -fdefault-double-8
@@ -75,7 +82,14 @@ OPTS90 = -O3
 CCOPTS = -O3 -std=c99
 #CCOPTS = -O3 -Wall -std=c99
 
-LOPTS = -lgomp
+#Python
+PYOPTS90 = $(OPTS90) -fPIC
+PYCCOPTS = $(CCOPTS) -fPIC
+
+#export CFLAGS = -O3 -fopenmp
+#export CFLAGS = -O3 -fopenmp -Wall
+
+#LOPTS = -lgomp
 LEGACY =
 
 # Makefile PGI compiler with Linux
@@ -99,48 +113,69 @@ LEGACY =
 # Makefile Cray compiler with Linux
 
 # MPI
-#MPIFC = ftn -h omp
-#MPICC = cc -h omp
+MPIFC = ftn -h omp
+MPICC = cc -h omp
 
-#FC90 = ftn -h omp
-#CC = cc
+FC90 = ftn -h omp
+CC = cc -h omp
 
-#OPTS90 = -O 3
+OPTS90 = -O3
 #OPTS90 = -O 3 -s real64
 #OPTS90 = -O 3 -R b -s real64 -en
 
-#CCOPTS = -O 3 -h c99 -h conform
+CCOPTS = -O3 -h c99 -h conform
 
 #LEGACY =
 
 #
 
-ESOBJS = libmpinit3.o libmppush3.o libmpsort3.o libmpgard3.o libmpfft3.o \
-libmpfield3.o libmpdiag3.o
+ESOBJS = libmpinit3.o libmppush3.o libvmppush3.o libmpsort3.o \
+libvmpsort3.o libmpgard3.o libvmpfft3.o libmpfield3.o libmpdiag3.o
 
-EMOBJS = libmpbpush3.o libmpcurd3.o
+EMOBJS = libmpbpush3.o libvmpbpush3.o libmpcurd3.o libvmpcurd3.o
 
-EDOBJS = libmpdpush3.o
+EDOBJS = libmpdpush3.o libvmpdpush3.o
 
-ESHOBJS = libmpinit3_h.o libmppush3_h.o libmpsort3_h.o libmpgard3_h.o \
-libmpfft3_h.o libmpfield3_h.o libmpdiag3_h.o
+ESHOBJS = libmpinit3_h.o libmppush3_h.o libvmppush3_h.o libmpsort3_h.o \
+libvmpsort3_h.o libmpgard3_h.o libvmpfft3_h.o libmpfield3_h.o libmpdiag3_h.o
 
-EMHOBJS = libmpbpush3_h.o libmpcurd3_h.o
+EMHOBJS = libmpbpush3_h.o libvmpbpush3_h.o libmpcurd3_h.o libvmpcurd3_h.o
 
-EDHOBJS = libmpdpush3_h.o
+EDHOBJS = libmpdpush3_h.o libvmpdpush3_h.o
 
 ESMODS = input3mod.o modmpinit3.o modmppush3.o modmpsort3.o modmpgard3.o \
-modmpfft3.o modmpfield3.o
+modmpfft3.o modmpfield3.o modmpextdriv3.o
 
 EMMODS = modmpbpush3.o modmpcurd3.o
 
-EDMODS = modmpdpush3.o
+EDMODS = modmpdpush3.o 
+
+# Python
+
+ESMODSRC =  ../ReadFiles/input3mod.f90 modmpinit3.f90 modmppush3.f90 modmpsort3.f90 \
+modmpgard3.f90 modmpfft3.f90 modmpfield3.f90
+
+EMMODSRC = modmpbpush3.f90 modmpcurd3.f90
+
+EDMODSRC = modmpdpush3.f90
+
+MPMODSRC = noMPI.f90 mpplib3.f90 mppmod3.f90 modmpdiag3.f90 omplib.f90 \
+ompplib3.f90
+
+ESPYOBJS = pympinit3.o pymppush3.o pyvmppush3.o pympsort3.o pyvmpsort3.o \
+pympgard3.o pympfft3.o pympfield3.o pympdiag3.o
+
+EMPYOBJS = pympbpush3.o pyvmpbpush3.o pympcurd3.o pyvmpcurd3.o
+
+EDPYOBJS = pympdpush3.o pyvmpdpush3.o
 
 # Linkage rules
 
 all : mpbeps3 mpbbeps3 mpdbeps3
 
 nompi : mbeps3 mbbeps3 mdbeps3
+
+python : mbeps3.py mbbeps3.py mdbeps3.py
 
 mpbeps3 : mpbeps3.o $(ESOBJS) dtimer.o
 	$(MPIFC) $(OPTS90) $(LOPTS) -o mpbeps3 \
@@ -176,6 +211,14 @@ mdbeps3 : mdbeps3.o $(ESOBJS) $(EMOBJS) $(EDOBJS) noMPI.o dtimer.o
     mdbeps3.o $(ESOBJS) $(EMOBJS) $(EDOBJS) $(ESMODS) $(EMMODS) $(EDMODS) \
     nmodmpdiag3.o nmpplib3.o nmppmod3.o omplib.o nompplib3.o $(ESHOBJS) \
     $(EMHOBJS) $(EDHOBJS) noMPI.o msimul3.o mbsimul3.o mdsimul3.o dtimer.o
+
+# Python
+
+mbeps3.py : libmpush3.so dtimer.so
+
+mbbeps3.py : libmbpush3.so
+
+mdbeps3.py : libmdpush3.so
 
 list:
 	echo mpbeps3 mpbbeps3 mpdbeps3 nompi mbeps3 mbbeps3 mdbeps3 clean clobber
@@ -226,14 +269,29 @@ libmpcurd3.o : libmpcurd3.f
 libmpdpush3.o : libmpdpush3.f
 	$(FC90) $(OPTS90) -o libmpdpush3.o -c libmpdpush3.f
 
+libvmppush3.o : libvmppush3.f
+	$(FC90) $(OPTS90) -o libvmppush3.o -c libvmppush3.f
+
+libvmpbpush3.o : libvmpbpush3.f
+	$(FC90) $(OPTS90) -o libvmpbpush3.o -c libvmpbpush3.f
+
+libvmpcurd3.o : libvmpcurd3.f
+	$(FC90) $(OPTS90) -o libvmpcurd3.o -c libvmpcurd3.f
+
+libvmpdpush3.o : libvmpdpush3.f
+	$(FC90) $(OPTS90) -o libvmpdpush3.o -c libvmpdpush3.f
+
 libmpsort3.o : libmpsort3.f
 	$(FC90) $(OPTS90) -o libmpsort3.o -c libmpsort3.f
+
+libvmpsort3.o : libvmpsort3.f
+	$(FC90) $(OPTS90) -o libvmpsort3.o -c libvmpsort3.f
 
 libmpgard3.o : libmpgard3.f
 	$(FC90) $(OPTS90) -o libmpgard3.o -c libmpgard3.f
 
-libmpfft3.o : libmpfft3.f
-	$(FC90) $(OPTS90) -o libmpfft3.o -c libmpfft3.f
+libvmpfft3.o : libvmpfft3.f
+	$(FC90) $(OPTS90) -o libvmpfft3.o -c libvmpfft3.f
 
 libmpfield3.o : libmpfield3.f
 	$(FC90) $(OPTS90) -o libmpfield3.o -c libmpfield3.f
@@ -256,14 +314,29 @@ libmpcurd3_h.o : libmpcurd3_h.f90
 libmpdpush3_h.o : libmpdpush3_h.f90
 	$(FC90) $(OPTS90) -o libmpdpush3_h.o -c libmpdpush3_h.f90
 
+libvmppush3_h.o : libvmppush3_h.f90
+	$(FC90) $(OPTS90) -o libvmppush3_h.o -c libvmppush3_h.f90
+
+libvmpbpush3_h.o : libvmpbpush3_h.f90
+	$(FC90) $(OPTS90) -o libvmpbpush3_h.o -c libvmpbpush3_h.f90
+
+libvmpcurd3_h.o : libvmpcurd3_h.f90
+	$(FC90) $(OPTS90) -o libvmpcurd3_h.o -c libvmpcurd3_h.f90
+
+libvmpdpush3_h.o : libvmpdpush3_h.f90
+	$(FC90) $(OPTS90) -o libvmpdpush3_h.o -c libvmpdpush3_h.f90
+
 libmpsort3_h.o : libmpsort3_h.f90
 	$(FC90) $(OPTS90) -o libmpsort3_h.o -c libmpsort3_h.f90
+
+libvmpsort3_h.o : libvmpsort3_h.f90
+	$(FC90) $(OPTS90) -o libvmpsort3_h.o -c libvmpsort3_h.f90
 
 libmpgard3_h.o : libmpgard3_h.f90
 	$(FC90) $(OPTS90) -o libmpgard3_h.o -c libmpgard3_h.f90
 
-libmpfft3_h.o : libmpfft3_h.f90
-	$(FC90) $(OPTS90) -o libmpfft3_h.o -c libmpfft3_h.f90
+libvmpfft3_h.o : libvmpfft3_h.f90
+	$(FC90) $(OPTS90) -o libvmpfft3_h.o -c libvmpfft3_h.f90
 
 libmpfield3_h.o : libmpfield3_h.f90
 	$(FC90) $(OPTS90) -o libmpfield3_h.o -c libmpfield3_h.f90
@@ -277,25 +350,25 @@ input3mod.o : input3mod.f90
 modmpinit3.o : modmpinit3.f90 libmpinit3_h.o
 	$(FC90) $(OPTS90) -o modmpinit3.o -c modmpinit3.f90
 
-modmppush3.o : modmppush3.f90 libmppush3_h.o
+modmppush3.o : modmppush3.f90 libmppush3_h.o libvmppush3_h.o
 	$(FC90) $(OPTS90) -o modmppush3.o -c modmppush3.f90
 
-modmpbpush3.o : modmpbpush3.f90 libmpbpush3_h.o
+modmpbpush3.o : modmpbpush3.f90 libmpbpush3_h.o libvmpbpush3_h.o
 	$(FC90) $(OPTS90) -o modmpbpush3.o -c modmpbpush3.f90
 
-modmpcurd3.o : modmpcurd3.f90 libmpcurd3_h.o
+modmpcurd3.o : modmpcurd3.f90 libmpcurd3_h.o libvmpcurd3_h.o
 	$(FC90) $(OPTS90) -o modmpcurd3.o -c modmpcurd3.f90
 
-modmpdpush3.o : modmpdpush3.f90 libmpdpush3_h.o
+modmpdpush3.o : modmpdpush3.f90 libmpdpush3_h.o libvmpdpush3_h.o
 	$(FC90) $(OPTS90) -o modmpdpush3.o -c modmpdpush3.f90
 
-modmpsort3.o : modmpsort3.f90 libmpsort3_h.o
+modmpsort3.o : modmpsort3.f90 libmpsort3_h.o libvmpsort3_h.o
 	$(FC90) $(OPTS90) -o modmpsort3.o -c modmpsort3.f90
 
 modmpgard3.o : modmpgard3.f90 libmpgard3_h.o
 	$(FC90) $(OPTS90) -o modmpgard3.o -c modmpgard3.f90
 
-modmpfft3.o : modmpfft3.f90 libmpfft3_h.o
+modmpfft3.o : modmpfft3.f90 libvmpfft3_h.o
 	$(FC90) $(OPTS90) -o modmpfft3.o -c modmpfft3.f90
 
 modmpfield3.o : modmpfield3.f90 libmpfield3_h.o
@@ -303,6 +376,9 @@ modmpfield3.o : modmpfield3.f90 libmpfield3_h.o
 
 modmpdiag3.o : modmpdiag3.f90 mppmod3.o libmpdiag3_h.o
 	$(FC90) $(OPTS90) -o modmpdiag3.o -c modmpdiag3.f90
+
+modmpextdriv3.o : modmpextdriv3.f90 input3mod.o modmpinit3.o 
+	$(FC90) $(OPTS90) -o modmpextdriv3.o -c modmpextdriv3.f90
 
 ompplib3.o : ompplib3.f90 modmpsort3.o modmpfft3.o modmpgard3.o mppmod3.o
 	$(FC90) $(OPTS90) -o ompplib3.o -c ompplib3.f90
@@ -313,7 +389,7 @@ mpsimul3.o : mpsimul3.f03 $(ESMODS) modmpdiag3.o mppmod3.o
 mpbsimul3.o : mpbsimul3.f03 mpsimul3.o $(EMMODS) modmpdiag3.o 
 	$(FC90) $(OPTS90) -o mpbsimul3.o -c $(FF03) mpbsimul3.f03
 
-mpdsimul3.o : mpdsimul3.f03 mpbsimul3.o $(EDMODS) modmpdiag3.o 
+mpdsimul3.o : mpdsimul3.f90 mpbsimul3.o $(EDMODS) modmpdiag3.o 
 	$(FC90) $(OPTS90) -o mpdsimul3.o -c $(FF03) mpdsimul3.f03
 
 mpbeps3.o : mpbeps3.f90 mpsimul3.o mppmod3.o omplib.o ompplib3.o
@@ -347,6 +423,79 @@ mbbeps3.o : mpbbeps3.f90 mbsimul3.o nmppmod3.o omplib.o nompplib3.o
 mdbeps3.o : mpdbeps3.f90 mdsimul3.o nmppmod3.o omplib.o nompplib3.o
 	$(FC90) $(OPTS90) -o mdbeps3.o -c mpdbeps3.f90
 
+# Python
+
+pydtimer.o : dtimer.c
+	$(CC) $(PYCCOPTS) -o pydtimer.o -c dtimer.c
+
+pympinit3.o : libmpinit3.f
+	$(FC90) $(PYOPTS90) -o pympinit3.o -c libmpinit3.f
+
+pymppush3.o : libmppush3.f
+	$(FC90) $(PYOPTS90) -o pymppush3.o -c libmppush3.f
+
+pyvmppush3.o : libvmppush3.f
+	$(FC90) $(PYOPTS90) -o pyvmppush3.o -c libvmppush3.f
+
+pympbpush3.o : libmpbpush3.f
+	$(FC90) $(PYOPTS90) -o pympbpush3.o -c libmpbpush3.f
+
+pyvmpbpush3.o : libvmpbpush3.f
+	$(FC90) $(PYOPTS90) -o pyvmpbpush3.o -c libvmpbpush3.f
+
+pympcurd3.o : libmpcurd3.f
+	$(FC90) $(PYOPTS90) -o pympcurd3.o -c libmpcurd3.f
+
+pyvmpcurd3.o : libvmpcurd3.f
+	$(FC90) $(PYOPTS90) -o pyvmpcurd3.o -c libvmpcurd3.f
+
+pympdpush3.o : libmpdpush3.f
+	$(FC90) $(PYOPTS90) -o pympdpush3.o -c libmpdpush3.f
+
+pyvmpdpush3.o : libvmpdpush3.f
+	$(FC90) $(PYOPTS90) -o pyvmpdpush3.o -c libvmpdpush3.f
+
+pympsort3.o : libmpsort3.f
+	$(FC90) $(PYOPTS90) -o pympsort3.o -c libmpsort3.f
+
+pyvmpsort3.o : libvmpsort3.f
+	$(FC90) $(PYOPTS90) -o pyvmpsort3.o -c libvmpsort3.f
+
+pympgard3.o : libmpgard3.f
+	$(FC90) $(PYOPTS90) -o pympgard3.o -c libmpgard3.f
+
+pympfft3.o : libvmpfft3.f
+	$(FC90) $(PYOPTS90) -o pympfft3.o -c libvmpfft3.f
+
+pympfield3.o : libmpfield3.f
+	$(FC90) $(PYOPTS90) -o pympfield3.o -c libmpfield3.f
+
+pympdiag3.o : libmpdiag3.f
+	$(FC90) $(PYOPTS90) -o pympdiag3.o -c libmpdiag3.f
+
+pynoMPI.o : noMPI.f
+	$(FC90) $(PYOPTS90) -o pynoMPI.o -c noMPI.f
+
+dtimer.so : dtimer_h.pyf dtimer.c
+	$(PCC) -m dtimer -c dtimer_h.pyf dtimer.c
+
+dtimer_h.pyf : dtimer_hpy.f90
+	f2py --overwrite-signature -m dtimer -h dtimer_h.pyf dtimer_hpy.f90
+
+libmpush3.so : $(ESHOBJS) $(ESMODSRC) $(ESPYOBJS) $(MPMODSRC) pynoMPI.o \
+                pydtimer.o
+	$(PFC) --f90flags="$(OPTS90)" $(LOPTS) -m libmpush3 \
+        -c $(ESHOBJS) $(ESMODSRC) $(ESPYOBJS) $(MPMODSRC) pynoMPI.o \
+           pydtimer.o
+
+libmbpush3.so : $(EMHOBJS) $(EMMODSRC) $(EMPYOBJS) pydtimer.o
+	$(PFC) --f90flags="$(OPTS90)" $(LOPTS) -m libmbpush3 \
+        -c $(EMHOBJS) $(EMMODSRC) $(EMPYOBJS) pydtimer.o
+
+libmdpush3.so : $(EDHOBJS) $(EDMODSRC) $(EDPYOBJS) pydtimer.o
+	$(PFC) --f90flags="$(OPTS90)" $(LOPTS) -m libmdpush3 \
+        -c $(EDHOBJS) $(EDMODSRC) $(EDPYOBJS) pydtimer.o
+
 cpexecs : cpmpbeps3 cpmpbbeps3 cpmpdbeps3
 
 cpmpbeps3 :
@@ -371,7 +520,7 @@ cpmdbeps3 :
 	cp mdbeps3 ../
 
 clean :
-	rm -f *.o *.mod
+	rm -f *.o *.mod *.pyf
 
 clobber: clean
-	rm -f mpbeps3 mpbbeps3 mpdbeps3 mbeps3 mbbeps3 mdbeps3
+	rm -f mpbeps3 mpbbeps3 mpdbeps3 mbeps3 mbbeps3 mdbeps3 *.so
