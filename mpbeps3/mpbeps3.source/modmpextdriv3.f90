@@ -190,7 +190,6 @@
 
       if (t < timerise + timeflat + timefall) then
               tempamp = tfac * amp     
-              print*, "t, tempamp = ", t, tempamp
               do i=2,nxe
                       xpos = real(i) - 2.
                       alpha = wavew*t-wavek*xpos
