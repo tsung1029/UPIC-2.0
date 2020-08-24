@@ -1934,15 +1934,15 @@
       endif
 !
 !
-! add external driver: updates exyze
+! add external driver: updates fext which is added to exyze in pusher
       select case (driver_select)
       case (0)
               call donothing()
       case (1)
-              call laguerregaussiandriv(exyze, real(ntime)*dt, nx, nxe,&
+              call laguerregaussiandriv(fext, real(ntime)*dt, nx, nxe,&
              &ny, nypmx, nz, nzpmx, nvpy, nvpz, idproc)
       case (2)
-              call gaussiandriv(exyze, real(ntime)*dt, nx, nxe, &
+              call gaussiandriv(fext, real(ntime)*dt, nx, nxe, &
              &ny,nypmx,nz, nzpmx, nvpy, nvpz, idproc)
       case (3)
               call planewavedriv(fext, real(ntime)*dt, nx, nxe,&
