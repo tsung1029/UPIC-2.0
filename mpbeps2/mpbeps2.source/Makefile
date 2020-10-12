@@ -167,7 +167,7 @@ ifeq ($(osname),Darwin)
 		CC = gcc
 		PFC = f2py --fcompiler=gnu95
 		PCC = f2py --compiler=unix
-		OPTS90 = -O3
+		OPTS90 = -O3 -std=legacy
 		#OPTS90 = -O3 -fdefault-real-8 -fdefault-double-8
 		#OPTS90 = -O3 -fbounds-check -fdefault-real-8 -fdefault-double-8 -Wall -std=f95
 		CCOPTS = -O3 -std=c99
