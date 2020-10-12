@@ -138,3 +138,46 @@ pfvreadf3.py, ptreadf3.py, or psreadf3.py
 To delete the library and the files in the mbeps3 directory, execute:
 
 make readfclobber
+
+********************************************************************************************************
+
+
+** A Quick note for compiling on the Mac:
+
+As Mac's have multiple compilers (LLVM with Xcode and GCC via homebrew).  Sometimes compiling is not straight forward.  
+In my opinion the UNIX 1/2 of OS X is not very standardized and it is not always easy to compile the code under OS X.  
+
+To compile UPIC, you need 
+
+*** A c-compiler
+*** A Fortran compiler
+*** Some version of MPI (I am using Open-MPI in this example but MPICH should work)
+*** HDF5 for I/O (for OpenMP I/O)
+
+I was not always a fan of Home Brew, but it is much faster than installing each software by source and I am more and more 
+impressed by its results.  It also produces results which can be reproduced on all computers so it makes software distribution
+more uniform and predictable.  
+
+To prepare your system, please type the following commands:
+
+brew install gcc (this actually installs the Fortran compiler)
+brew install open-mpi
+brew install hdf5-mpi
+
+This will provide all the libraries needed for UPIC.
+
+As of October 2020, at the end of updating homebrew, you should see the following results:
+
+
+uclapic$ mpicc --version
+Apple clang version 12.0.0 (clang-1200.0.32.2)
+Target: x86_64-apple-darwin19.6.0
+Thread model: posix
+InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+uclapic$ mpif90 --version
+GNU Fortran (Homebrew GCC 10.2.0) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
