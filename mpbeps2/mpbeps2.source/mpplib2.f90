@@ -1542,21 +1542,22 @@
          enddo
       endif
       end subroutine
-!
+!-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic real 2d scalar data f
+!> and writes to a direct access binary file with spatial decomposition
+!> data must have a uniform partition
+!> input: all, output: nrec
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param nx nx/ny = system length in x/y direction
+!! @param ny nx/ny = system length in x/y direction
+!! @param kyp = number of data values per block
+!! @param nxv = first dimension of data array f, must be >= nx
+!! @param nypmx = second dimension of data array f, must be >= kyp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for write, if nrec > 0
 !-----------------------------------------------------------------------
       subroutine PPWRITE2(f,g,nx,ny,kyp,nxv,nypmx,iunit,nrec)
-! this subroutine collects distributed periodic real 2d scalar data f
-! and writes to a direct access binary file with spatial decomposition
-! data must have a uniform partition
-! f = input data to be written
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kyp = number of data values per block
-! nxv = first dimension of data array f, must be >= nx
-! nypmx = second dimension of data array f, must be >= kyp
-! iunit = fortran unit number
-! nrec = current record number for write, if nrec > 0
-! input: all, output: nrec
       implicit none
       integer, intent(in) :: nx, ny, kyp, nxv, nypmx, iunit
       integer, intent(inout) :: nrec
