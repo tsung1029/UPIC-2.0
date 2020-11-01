@@ -1,4 +1,10 @@
 !-----------------------------------------------------------------------
+! TITLE     : mpplib2.f90
+! PROJECT   : UPIC-2.0
+! MODULE    : mpplib2
+!> @author  Viktor K. decyk
+!-----------------------------------------------------------------------
+!
 ! Basic parallel PIC library for MPI communications with OpenMP
 ! mpplib2.f90 contains basic communications procedures for 1d partitions
 ! PPINIT2 initializes parallel processing for Fortran90, returns
@@ -115,18 +121,19 @@
 !
       contains
 !
+!> this subroutine initializes parallel processing
+!> lgrp communicator = MPI_COMM_WORLD
+!> output: idproc, nvp
+!! @param idproc = processor id in lgrp communicator
+!! @param nvp = number of real or virtual processors obtained
 !-----------------------------------------------------------------------
       subroutine PPINIT2(idproc,nvp)
-! this subroutine initializes parallel processing
-! lgrp communicator = MPI_COMM_WORLD
-! output: idproc, nvp
-! idproc = processor id in lgrp communicator
-! nvp = number of real or virtual processors obtained
+
       implicit none
       integer, intent(inout) :: idproc, nvp
-! nproc = number of real or virtual processors obtained
-! lgrp = current communicator
-! mreal = default datatype for reals
+!! @var integer nproc = number of real or virtual processors obtained
+!! @var integer lgrp = current communicator
+!! @var  mreal = default datatype for reals
 ! mint = default datatype for integers
 ! mcplx = default datatype for complex type
 ! mdouble = default double precision type
@@ -190,10 +197,11 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine terminates parallel processing
+!! @detail
+!! integer lworld = MPI_COMM_WORLD communicator
       subroutine PPEXIT()
-! this subroutine terminates parallel processing
       implicit none
-! lworld = MPI_COMM_WORLD communicator
 ! local data
       integer :: ierror
       logical :: flag
@@ -208,8 +216,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine aborts parallel processing
       subroutine PPABORT()
-! this subroutine aborts parallel processing
       implicit none
 ! lworld = MPI_COMM_WORLD communicator
 ! local data
@@ -225,14 +233,14 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine performs local wall clock timing
+!> input: icntrl, dtime
+!! @param icntrl = (-1,0,1) = (initialize,ignore,read) clock
+!! clock should be initialized before it is read!
+!! @param time = elapsed time in seconds
+!! @param dtime = current time
+!! written for mpi
       subroutine PWTIMERA(icntrl,time,dtime)
-! this subroutine performs local wall clock timing
-! input: icntrl, dtime
-! icntrl = (-1,0,1) = (initialize,ignore,read) clock
-! clock should be initialized before it is read!
-! time = elapsed time in seconds
-! dtime = current time
-! written for mpi
       implicit none
       integer, intent(in) :: icntrl
       real, intent(inout) :: time
@@ -251,13 +259,13 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine performs a parallel sum of a vector, that is:
+!> f(j,k) = sum over k of f(j,k)
+!> at the end, all processors contain the same summation.
+!! @param f = input and output real data
+!! @param g = scratch real array
+!! @param nxp = number of data values in vector
       subroutine PPSUM(f,g,nxp)
-! this subroutine performs a parallel sum of a vector, that is:
-! f(j,k) = sum over k of f(j,k)
-! at the end, all processors contain the same summation.
-! f = input and output real data
-! g = scratch real array
-! nxp = number of data values in vector
       implicit none
       integer, intent(in) :: nxp
       real, dimension(nxp), intent(inout) :: f, g
@@ -277,13 +285,13 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
-      subroutine PPDSUM(f,g,nxp)
 ! this subroutine performs a parallel sum of a vector, that is:
 ! f(j,k) = sum over k of f(j,k)
 ! at the end, all processors contain the same summation.
 ! f = input and output double precision data
 ! g = scratch double precision array
 ! nxp = number of data values in vector
+      subroutine PPDSUM(f,g,nxp)
       implicit none
       integer, intent(in) :: nxp
       double precision, dimension(nxp), intent(inout) :: f, g
@@ -303,13 +311,14 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine finds parallel maximum for each element of a vector
+!> that is, f(j,k) = maximum as a function of k of f(j,k)
+!> at the end, all processors contain the same maximum.
+!! @param f = input and output real data
+!! @param g = scratch real array
+!! @param nxp = number of data values in vector
       subroutine PPMAX(f,g,nxp)
-! this subroutine finds parallel maximum for each element of a vector
-! that is, f(j,k) = maximum as a function of k of f(j,k)
-! at the end, all processors contain the same maximum.
-! f = input and output real data
-! g = scratch real array
-! nxp = number of data values in vector
+
       implicit none
       integer, intent(in) :: nxp
       real, dimension(nxp), intent(inout) :: f, g
@@ -329,13 +338,13 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine finds parallel maximum for each element of a vector
+!> that is, if(j,k) = maximum as a function of k of if(j,k)
+!> at the end, all processors contain the same maximum.
+!! @param if = input and output integer data
+!! @param ig = scratch integer array
+!! @param nxp = number of data values in vector
       subroutine PPIMAX(if,ig,nxp)
-! this subroutine finds parallel maximum for each element of a vector
-! that is, if(j,k) = maximum as a function of k of if(j,k)
-! at the end, all processors contain the same maximum.
-! if = input and output integer data
-! ig = scratch integer array
-! nxp = number of data values in vector
       implicit none
       integer, intent(in) :: nxp
       integer, dimension(nxp), intent(inout) :: if, ig
@@ -356,13 +365,14 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine finds parallel maximum for each element of a vector
+!> that is, f(j,k) = maximum as a function of k of f(j,k)
+!> at the end, all processors contain the same maximum.
+!! @param f = input and output double precision data
+!! @param g = scratch double precision array
+!! @param nxp = number of data values in vector
       subroutine PPDMAX(f,g,nxp)
-! this subroutine finds parallel maximum for each element of a vector
-! that is, f(j,k) = maximum as a function of k of f(j,k)
-! at the end, all processors contain the same maximum.
-! f = input and output double precision data
-! g = scratch double precision array
-! nxp = number of data values in vector
+
       implicit none
       integer, intent(in) :: nxp
       double precision, dimension(nxp), intent(inout) :: f, g
@@ -382,13 +392,13 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine performs a parallel prefix reduction of a vector,
+!> that is: f(j,k) = sum over k of f(j,k), where the sum is over k values
+!> less than idproc.
+!! @param f = input and output double precision data
+!! @param g = scratch double precision array
+!! @param nxp = number of data values in vector
       subroutine PPDSCAN(f,g,nxp)
-! this subroutine performs a parallel prefix reduction of a vector,
-! that is: f(j,k) = sum over k of f(j,k), where the sum is over k values
-! less than idproc.
-! f = input and output double precision data
-! g = scratch double precision array
-! nxp = number of data values in vector
       implicit none
       integer, intent(in) :: nxp
       double precision, dimension(nxp), intent(inout) :: f, g
@@ -408,10 +418,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine broadcasts integer data from node 0
+!! @param if = input and output integer data
+!! @param  nxp = number of data values
       subroutine PPBICAST(if,nxp)
-! this subroutine broadcasts integer data from node 0
-! if = input and output integer data
-! nxp = number of data values
       implicit none
       integer, intent(in) :: nxp
       integer, dimension(nxp), intent(inout) :: if
@@ -427,10 +437,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine broadcasts double precision data from node 0
+!! @param f = input and output double precision data
+!! @param nxp = number of data values
       subroutine PPBDCAST(f,nxp)
-! this subroutine broadcasts double precision data from node 0
-! f = input and output double precision data
-! nxp = number of data values
       implicit none
       integer, intent(in) :: nxp
       double precision, dimension(nxp), intent(inout) :: f
@@ -446,12 +456,12 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine moves an integer array to the right
+!> with periodic boundary conditions
+!! @param if = input and output integer data
+!! @param ig = scratch integer array
+!! @param nxp = number of data values in vector
       subroutine PPISHFTR(if,ig,nxp)
-! this subroutine moves an integer array to the right
-! with periodic boundary conditions
-! if = input and output integer data
-! ig = scratch integer array
-! nxp = number of data values in vector
       implicit none
       integer, intent(in) :: nxp
       integer, dimension(nxp), intent(inout) :: if, ig
@@ -485,18 +495,19 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine copies data to guard cells in non-uniform partitions
+!! @param f(j,k) = real data for grid j,k in particle partition.
+!! the grid is non-uniform and includes one extra guard cell.
+!! output: f
+!! @param nyp = number of primary gridpoints in field partition
+!! it is assumed the nyp > 0.
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param nxv = first dimension of f, must be >= nx
+!! @param nypmx = maximum size of field partition, including guard cell.
+!! linear interpolation, for distributed data
       subroutine PPNCGUARD2L(f,nyp,kstrt,nvp,nxv,nypmx)
-! this subroutine copies data to guard cells in non-uniform partitions
-! f(j,k) = real data for grid j,k in particle partition.
-! the grid is non-uniform and includes one extra guard cell.
-! output: f
-! nyp = number of primary gridpoints in field partition
-! it is assumed the nyp > 0.
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! nxv = first dimension of f, must be >= nx
-! nypmx = maximum size of field partition, including guard cell.
-! linear interpolation, for distributed data
+
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp, nxv, nypmx
       real, dimension(nxv,nypmx), intent(inout) :: f
@@ -528,20 +539,20 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine adds data from guard cells in non-uniform partitions
+!! @param f(j,k) = real data for grid j,k in particle partition.
+!! the grid is non-uniform and includes one extra guard cell.
+!! output: f, scr
+!! @param scr(j) = scratch array for particle partition
+!! @param nyp = number of primary gridpoints in particle partition
+!! it is assumed the nyp > 0.
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param nx = system length in x direction
+!! @param nxv = first dimension of f, must be >= nx
+!! @param nypmx = maximum size of field partition, including guard cells.
+!! @param linear interpolation, for distributed data
       subroutine PPNAGUARD2L(f,scr,nyp,nx,kstrt,nvp,nxv,nypmx)
-! this subroutine adds data from guard cells in non-uniform partitions
-! f(j,k) = real data for grid j,k in particle partition.
-! the grid is non-uniform and includes one extra guard cell.
-! output: f, scr
-! scr(j) = scratch array for particle partition
-! nyp = number of primary gridpoints in particle partition
-! it is assumed the nyp > 0.
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! nx = system length in x direction
-! nxv = first dimension of f, must be >= nx
-! nypmx = maximum size of field partition, including guard cells.
-! linear interpolation, for distributed data
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp, nx, nxv, nypmx
       real, dimension(nxv,nypmx), intent(inout) :: f
@@ -581,21 +592,21 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine adds data from guard cells in non-uniform partitions
+!! @param f(ndim,j,k) = real data for grid j,k in particle partition.
+!! the grid is non-uniform and includes one extra guard cell.
+!! output: f, scr
+!! @param scr(ndim,j) = scratch array for particle partition
+!! @param nyp = number of primary gridpoints in particle partition
+!! @param it is assumed the nyp > 0.
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param nx = system length in x direction
+!! @param ndim = leading dimension of array f
+!! @param nxv = first dimension of f, must be >= nx
+!! @param nypmx = maximum size of field partition, including guard cells.
+!!  linear interpolation, for distributed data
       subroutine PPNACGUARD2L(f,scr,nyp,nx,ndim,kstrt,nvp,nxv,nypmx)
-! this subroutine adds data from guard cells in non-uniform partitions
-! f(ndim,j,k) = real data for grid j,k in particle partition.
-! the grid is non-uniform and includes one extra guard cell.
-! output: f, scr
-! scr(ndim,j) = scratch array for particle partition
-! nyp = number of primary gridpoints in particle partition
-! it is assumed the nyp > 0.
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! nx = system length in x direction
-! ndim = leading dimension of array f
-! nxv = first dimension of f, must be >= nx
-! nypmx = maximum size of field partition, including guard cells.
-! linear interpolation, for distributed data
       implicit none
       integer, intent(in) ::  nyp, kstrt, nvp, nx, ndim, nxv, nypmx
       real, dimension(ndim,nxv,nypmx), intent(inout) :: f
@@ -641,31 +652,33 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine moves fields into appropriate spatial regions,
+!> between non-uniform and uniform partitions
+!! @param f(j,k) = real data for grid j,k in field partition.
+!! the grid is non-uniform and includes extra guard cells.
+!! output: f, g, ierr, and possibly mter
+!! @param g(j,k) = scratch data for grid j,k in field partition.
+!! @param noff = lowermost global gridpoint in field partition
+!! @param nyp = number of primary gridpoints in field partition
+!! @param noffs noffs/nyps = source or scratch arrays for field partition
+!! @param nyps noffs/nyps = source or scratch arrays for field partition
+!! @param noffd noffd/nypd = destination or scratch arrays for field partition
+!! @param nypd noffd/nypd = destination or scratch arrays for field partition
+!! @param isign isign = -1, move from non-uniform (noff/nyp) to uniform (kyp) fields
+!! isign = 1, move from uniform (kyp) to non-uniform (noff/nyp) fields
+!! if isign = 0, the noffs/nyps contains the source partition, noffd/nypd
+!!    contains the destination partition, and noff/nyp, kyp are not used.
+!!    the partitions noffs/nyps and noffd/nypd are modified.
+!! @param kyp = number of complex grids in each uniform field partition.
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param nxv = first dimension of f, must be >= nx
+!! @param nypmx = maximum size of field partition, must be >= kyp+1
+!! @param  mter = number of shifts required
+!! if mter = 0, then number of shifts is determined and returned
+!! @param ierr = (0,1) = (no,yes) error condition exists
       subroutine PPFMOVE2(f,g,noff,nyp,noffs,nyps,noffd,nypd,isign,kyp, &
      &ny,kstrt,nvp,nxv,nypmx,mter,ierr)
-! this subroutine moves fields into appropriate spatial regions,
-! between non-uniform and uniform partitions
-! f(j,k) = real data for grid j,k in field partition.
-! the grid is non-uniform and includes extra guard cells.
-! output: f, g, ierr, and possibly mter
-! g(j,k) = scratch data for grid j,k in field partition.
-! noff = lowermost global gridpoint in field partition
-! nyp = number of primary gridpoints in field partition
-! noffs/nyps = source or scratch arrays for field partition
-! noffd/nypd = destination or scratch arrays for field partition
-! isign = -1, move from non-uniform (noff/nyp) to uniform (kyp) fields
-! isign = 1, move from uniform (kyp) to non-uniform (noff/nyp) fields
-! if isign = 0, the noffs/nyps contains the source partition, noffd/nypd
-!    contains the destination partition, and noff/nyp, kyp are not used.
-!    the partitions noffs/nyps and noffd/nypd are modified.
-! kyp = number of complex grids in each uniform field partition.
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! nxv = first dimension of f, must be >= nx
-! nypmx = maximum size of field partition, must be >= kyp+1
-! mter = number of shifts required
-! if mter = 0, then number of shifts is determined and returned
-! ierr = (0,1) = (no,yes) error condition exists
       implicit none
       integer, intent(in) :: noff, nyp, isign, kyp, ny, kstrt, nvp
       integer, intent(in) :: nxv, nypmx
@@ -896,24 +909,24 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine performs a transpose of a matrix f, distributed in y,
+!> to a matrix g, distributed in x, that is,
+!> g(k+kyp*(m-1),j,l) = f(j+kxp*(l-1),k,m), where
+!> 1 <= j <= kxp, 1 <= k <= kyp, 1 <= l <= nx/kxp, 1 <= m <= ny/kyp
+!> and where indices l and m can be distributed across processors.
+!> this subroutine sends and receives one message at a time, either
+!> synchronously or asynchronously. it uses a minimum of system resources
+!! @param f = complex input array
+!! @param g = complex output array
+!! @param s, t = complex scratch arrays
+!! @param nx/ny = number of points in x/y
+!! @param kxp/kyp = number of data values per block in x/y
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param nxv/nyv = first dimension of f/g
+!! @param kypd/kxpd = second dimension of f/g
       subroutine PPTPOSE(f,g,s,t,nx,ny,kxp,kyp,kstrt,nvp,nxv,nyv,kxpd,  &
      &kypd)
-! this subroutine performs a transpose of a matrix f, distributed in y,
-! to a matrix g, distributed in x, that is,
-! g(k+kyp*(m-1),j,l) = f(j+kxp*(l-1),k,m), where
-! 1 <= j <= kxp, 1 <= k <= kyp, 1 <= l <= nx/kxp, 1 <= m <= ny/kyp
-! and where indices l and m can be distributed across processors.
-! this subroutine sends and receives one message at a time, either
-! synchronously or asynchronously. it uses a minimum of system resources
-! f = complex input array
-! g = complex output array
-! s, t = complex scratch arrays
-! nx/ny = number of points in x/y
-! kxp/kyp = number of data values per block in x/y
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! nxv/nyv = first dimension of f/g
-! kypd/kxpd = second dimension of f/g
       implicit none
       integer, intent(in) :: nx, ny, kxp, kyp, kstrt, nvp, nxv, nyv
       integer, intent(in) :: kxpd, kypd
@@ -988,25 +1001,25 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine performs a transpose of a matrix f, distributed in y,
+!> to a matrix g, distributed in x, that is,
+!> g(1:ndim,k+kyp*(m-1),j,l) = f(1:ndim,j+kxp*(l-1),k,m), where
+!> 1 <= j <= kxp, 1 <= k <= kyp, 1 <= l <= nx/kxp, 1 <= m <= ny/kyp
+!> and where indices l and m can be distributed across processors.
+!> this subroutine sends and receives one message at a time, either
+!> synchronously or asynchronously. it uses a minimum of system resources
+!! @param f = complex input array
+!! @param g = complex output array
+!! @param s,t = complex scratch arrays
+!! @param nx/ny = number of points in x/y
+!! @param kxp/kyp = number of data values per block in x/y
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param ndim = leading dimension of arrays f and g
+!! @param nxv/nyv = first dimension of f/g
+!! @param kypd/kxpd = second dimension of f/g
       subroutine PPNTPOSE(f,g,s,t,nx,ny,kxp,kyp,kstrt,nvp,ndim,nxv,nyv, &
      &kxpd,kypd)
-! this subroutine performs a transpose of a matrix f, distributed in y,
-! to a matrix g, distributed in x, that is,
-! g(1:ndim,k+kyp*(m-1),j,l) = f(1:ndim,j+kxp*(l-1),k,m), where
-! 1 <= j <= kxp, 1 <= k <= kyp, 1 <= l <= nx/kxp, 1 <= m <= ny/kyp
-! and where indices l and m can be distributed across processors.
-! this subroutine sends and receives one message at a time, either
-! synchronously or asynchronously. it uses a minimum of system resources
-! f = complex input array
-! g = complex output array
-! s, t = complex scratch arrays
-! nx/ny = number of points in x/y
-! kxp/kyp = number of data values per block in x/y
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! ndim = leading dimension of arrays f and g
-! nxv/nyv = first dimension of f/g
-! kypd/kxpd = second dimension of f/g
       implicit none
       integer, intent(in) :: nx, ny, kxp, kyp, kstrt, nvp, ndim
       integer, intent(in) :: nxv, nyv, kxpd, kypd
@@ -1089,38 +1102,39 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine moves particles into appropriate spatial regions
+!> periodic boundary conditions
+!> output: part, npp, sbufr, sbufl, rbufr, rbufl, info
+!! @param part
+!! part(1,n) = position x of particle n in partition
+!! part(2,n) = position y of particle n in partition
+!! part(3,n) = velocity vx of particle n in partition
+!! part(4,n) = velocity vy of particle n in partition
+!! @param edges(1:2) = lower:lower boundary of particle partition
+!! @param npp = number of particles in partition
+!! @param sbufl = buffer for particles being sent to lower processor
+!! @param sbufr = buffer for particles being sent to upper processor
+!! @param rbufl = buffer for particles being received from lower processor
+!! @param rbufr = buffer for particles being received from upper processor
+!! @param ihole = location of holes left in particle arrays
+!! @param ny = system length in y direction
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param ndim = number of velocity dimensions = 2 or 3
+!! @param nc = (1,2) = (normal,tagged) partitioned co-ordinate to sort by
+!! @param idimp = size of phase space = 4 or 5
+!! @param npmax = maximum number of particles in each partition.
+!! @param idps = number of partition boundaries
+!! @param nbmax =  size of buffers for passing particles between processors
+!! @param ntmax =  size of hole array for particles leaving processors
+!! @param info = status information
+!! info(1) = ierr = (0,N) = (no,yes) error condition exists
+!! info(2) = maximum number of particles per processor
+!! info(3) = minimum number of particles per processor
+!! info(4) = maximum number of buffer overflows
+!! info(5) = maximum number of particle passes required
       subroutine PPMOVE2(part,edges,npp,sbufr,sbufl,rbufr,rbufl,ihole,ny&
      &,kstrt,nvp,ndim,nc,idimp,npmax,idps,nbmax,ntmax,info)
-! this subroutine moves particles into appropriate spatial regions
-! periodic boundary conditions
-! output: part, npp, sbufr, sbufl, rbufr, rbufl, info
-! part(1,n) = position x of particle n in partition
-! part(2,n) = position y of particle n in partition
-! part(3,n) = velocity vx of particle n in partition
-! part(4,n) = velocity vy of particle n in partition
-! edges(1:2) = lower:lower boundary of particle partition
-! npp = number of particles in partition
-! sbufl = buffer for particles being sent to lower processor
-! sbufr = buffer for particles being sent to upper processor
-! rbufl = buffer for particles being received from lower processor
-! rbufr = buffer for particles being received from upper processor
-! ihole = location of holes left in particle arrays
-! ny = system length in y direction
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! ndim = number of velocity dimensions = 2 or 3
-! nc = (1,2) = (normal,tagged) partitioned co-ordinate to sort by
-! idimp = size of phase space = 4 or 5
-! npmax = maximum number of particles in each partition.
-! idps = number of partition boundaries
-! nbmax =  size of buffers for passing particles between processors
-! ntmax =  size of hole array for particles leaving processors
-! info = status information
-! info(1) = ierr = (0,N) = (no,yes) error condition exists
-! info(2) = maximum number of particles per processor
-! info(3) = minimum number of particles per processor
-! info(4) = maximum number of buffer overflows
-! info(5) = maximum number of particle passes required
       implicit none
       integer, intent(in) :: ny, kstrt, nvp, ndim, nc, idimp, npmax
       integer, intent(in) :: idps, nbmax, ntmax
@@ -1448,25 +1462,25 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine moves particles into appropriate spatial regions
+!> for distributed data, with 1d domain decomposition in y.
+!> tiles are assumed to be arranged in 2D linear memory
+!> output: rbufr, rbufl, mcll, mclr
+!! @param sbufl = buffer for particles being sent to lower processor
+!! @param sbufr = buffer for particles being sent to upper processor
+!! @param rbufl = buffer for particles being received from lower processor
+!! @param rbufr = buffer for particles being received from upper processor
+!! @param ncll = particle number being sent to lower processor
+!! @param nclr = particle number being sent to upper processor
+!! @param mcll = particle number being received from lower processor
+!! @param mclr = particle number being received from upper processor
+!! @param kstrt = starting data block number
+!! @param nvp = number of real or virtual processors
+!! @param idimp = size of phase space = 4 or 5
+!! @param nbmax =  size of buffers for passing particles between processors
+!! @param mx1 = (system length in x direction - 1)/mx + 1
       subroutine PPPMOVE2(sbufr,sbufl,rbufr,rbufl,ncll,nclr,mcll,mclr,  &
      &kstrt,nvp,idimp,nbmax,mx1)
-! this subroutine moves particles into appropriate spatial regions
-! for distributed data, with 1d domain decomposition in y.
-! tiles are assumed to be arranged in 2D linear memory
-! output: rbufr, rbufl, mcll, mclr
-! sbufl = buffer for particles being sent to lower processor
-! sbufr = buffer for particles being sent to upper processor
-! rbufl = buffer for particles being received from lower processor
-! rbufr = buffer for particles being received from upper processor
-! ncll = particle number being sent to lower processor
-! nclr = particle number being sent to upper processor
-! mcll = particle number being received from lower processor
-! mclr = particle number being received from upper processor
-! kstrt = starting data block number
-! nvp = number of real or virtual processors
-! idimp = size of phase space = 4 or 5
-! nbmax =  size of buffers for passing particles between processors
-! mx1 = (system length in x direction - 1)/mx + 1
       implicit none
       integer, intent(in) :: kstrt, nvp, idimp, nbmax, mx1
       real, dimension(idimp,nbmax), intent(in) :: sbufl, sbufr
@@ -1611,20 +1625,20 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads periodic real 2d scalar data f from a direct
+!> access binary file and distributes it with spatial decomposition
+!> data must have a uniform partition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kyp = number of data values per block
+!! @param nxv = first dimension of data array f, must be >= nx
+!! @param nypmx = second dimension of data array f, must be >= kyp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for read, if nrec > 0
+!! @param irc = error indicator
+!! input: all, output: f, nrec, irc
       subroutine PPREAD2(f,g,nx,ny,kyp,nxv,nypmx,iunit,nrec,irc)
-! this subroutine reads periodic real 2d scalar data f from a direct
-! access binary file and distributes it with spatial decomposition
-! data must have a uniform partition
-! f = output data to be read
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kyp = number of data values per block
-! nxv = first dimension of data array f, must be >= nx
-! nypmx = second dimension of data array f, must be >= kyp
-! iunit = fortran unit number
-! nrec = current record number for read, if nrec > 0
-! irc = error indicator
-! input: all, output: f, nrec, irc
       implicit none
       integer, intent(in) :: nx, ny, kyp, nxv, nypmx, iunit
       integer, intent(inout) :: nrec, irc
@@ -1679,20 +1693,20 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic real 2d vector data f
+!> and writes to a direct access binary file with spatial decomposition
+!> data must have a uniform partition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kyp = number of data values per block
+!! @param ndim = first dimension of data array f
+!! @param nxv = second dimension of data array f, must be >= nx
+!! @param nypmx = third dimension of data array f, must be >= kyp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for write, if nrec > 0
+!> input: all, output: nrec
       subroutine PPVWRITE2(f,g,nx,ny,kyp,ndim,nxv,nypmx,iunit,nrec)
-! this subroutine collects distributed periodic real 2d vector data f
-! and writes to a direct access binary file with spatial decomposition
-! data must have a uniform partition
-! f = input data to be written
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kyp = number of data values per block
-! ndim = first dimension of data array f
-! nxv = second dimension of data array f, must be >= nx
-! nypmx = third dimension of data array f, must be >= kyp
-! iunit = fortran unit number
-! nrec = current record number for write, if nrec > 0
-! input: all, output: nrec
       implicit none
       integer, intent(in) :: nx, ny, kyp, ndim, nxv, nypmx, iunit
       integer, intent(inout) :: nrec
@@ -1750,21 +1764,21 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads periodic real 2d vector data f from a direct
+!> access binary file and distributes it with spatial decomposition
+!> data must have a uniform partition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kyp = number of data values per block
+!! @param ndim = first dimension of data array f
+!! @param nxv = second dimension of data array f, must be >= nx
+!! @param nypmx = third dimension of data array f, must be >= kyp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for read, if nrec > 0
+!! @param irc = error indicator
+!> input: all, output: f, nrec, irc
       subroutine PPVREAD2(f,g,nx,ny,kyp,ndim,nxv,nypmx,iunit,nrec,irc)
-! this subroutine reads periodic real 2d vector data f from a direct
-! access binary file and distributes it with spatial decomposition
-! data must have a uniform partition
-! f = output data to be read
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kyp = number of data values per block
-! ndim = first dimension of data array f
-! nxv = second dimension of data array f, must be >= nx
-! nypmx = third dimension of data array f, must be >= kyp
-! iunit = fortran unit number
-! nrec = current record number for read, if nrec > 0
-! irc = error indicator
-! input: all, output: f, nrec, irc
       implicit none
       integer, intent(in) :: nx, ny, kyp, ndim, nxv, nypmx, iunit
       integer, intent(inout) :: nrec, irc
@@ -1823,19 +1837,19 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed complex 2d scalar data f and
+!> writes to a direct access binary file with spatial decomposition
+!> data must have a uniform partition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kxp = number of data values per block
+!! @param nyv = first dimension of data array f, must be >= ny
+!! @param kxpd = second dimension of data array f, must be >= kxp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for write, if nrec > 0
+!> input: all, output: nrec
       subroutine PPCWRITE2(f,g,nx,ny,kxp,nyv,kxpd,iunit,nrec)
-! this subroutine collects distributed complex 2d scalar data f and
-! writes to a direct access binary file with spatial decomposition
-! data must have a uniform partition
-! f = input data to be written
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kxp = number of data values per block
-! nyv = first dimension of data array f, must be >= ny
-! kxpd = second dimension of data array f, must be >= kxp
-! iunit = fortran unit number
-! nrec = current record number for write, if nrec > 0
-! input: all, output: nrec
       implicit none
       integer, intent(in) :: nx, ny, kxp, nyv, kxpd, iunit
       integer, intent(inout) :: nrec
@@ -1895,20 +1909,20 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads complex 2d scalar data f from a direct access
+!> binary file and distributes it with spatial decomposition
+!> data must have a uniform partition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kxp = number of data values per block
+!! @param nyv = first dimension of data array f, must be >= ny
+!! @param kxpd = second dimension of data array f, must be >= kxp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for read, if nrec > 0
+!! @param irc = error indicator
+!> input: all, output: f, nrec, irc
       subroutine PPCREAD2(f,g,nx,ny,kxp,nyv,kxpd,iunit,nrec,irc)
-! this subroutine reads complex 2d scalar data f from a direct access
-! binary file and distributes it with spatial decomposition
-! data must have a uniform partition
-! f = output data to be read
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kxp = number of data values per block
-! nyv = first dimension of data array f, must be >= ny
-! kxpd = second dimension of data array f, must be >= kxp
-! iunit = fortran unit number
-! nrec = current record number for read, if nrec > 0
-! irc = error indicator
-! input: all, output: f, nrec, irc
       implicit none
       integer, intent(in) :: nx, ny, kxp, nyv, kxpd, iunit
       integer, intent(inout) :: nrec, irc
@@ -1971,20 +1985,21 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed complex 2d vector data f and
+!> writes to a direct access binary file with spatial decomposition
+!> data must have a uniform partition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kxp = number of data values per block
+!! @param ndim = first dimension of data array f
+!! @param nyv = second dimension of data array f, must be >= ny
+!! @param kxpd = third dimension of data array f, must be >= kxp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for write, if nrec > 0
+!> input: all, output: nrec
       subroutine PPVCWRITE2(f,g,nx,ny,kxp,ndim,nyv,kxpd,iunit,nrec)
-! this subroutine collects distributed complex 2d vector data f and
-! writes to a direct access binary file with spatial decomposition
-! data must have a uniform partition
-! f = input data to be written
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kxp = number of data values per block
-! ndim = first dimension of data array f
-! nyv = second dimension of data array f, must be >= ny
-! kxpd = third dimension of data array f, must be >= kxp
-! iunit = fortran unit number
-! nrec = current record number for write, if nrec > 0
-! input: all, output: nrec
+
       implicit none
       integer, intent(in) :: nx, ny, kxp, ndim, nyv, kxpd, iunit
       integer, intent(inout) :: nrec
@@ -2049,21 +2064,21 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads complex 2d vector data f from a direct access
+!> binary file and distributes it with spatial decomposition
+!> data must have a uniform partition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param nx/ny = system length in x/y direction
+!! @param kxp = number of data values per block
+!! @param ndim = first dimension of data array f
+!! @param nyv = second dimension of data array f, must be >= ny
+!! @param kxpd = third dimension of data array f, must be >= kxp
+!! @param iunit = fortran unit number
+!! @param nrec = current record number for read, if nrec > 0
+!! @param irc = error indicator
+!> input: all, output: f, nrec, irc
       subroutine PPVCREAD2(f,g,nx,ny,kxp,ndim,nyv,kxpd,iunit,nrec,irc)
-! this subroutine reads complex 2d vector data f from a direct access
-! binary file and distributes it with spatial decomposition
-! data must have a uniform partition
-! f = output data to be read
-! g = scratch data
-! nx/ny = system length in x/y direction
-! kxp = number of data values per block
-! ndim = first dimension of data array f
-! nyv = second dimension of data array f, must be >= ny
-! kxpd = third dimension of data array f, must be >= kxp
-! iunit = fortran unit number
-! nrec = current record number for read, if nrec > 0
-! irc = error indicator
-! input: all, output: f, nrec, irc
       implicit none
       integer, intent(in) :: nx, ny, kxp, ndim, nyv, kxpd, iunit
       integer, intent(inout) :: nrec, irc
@@ -2129,15 +2144,15 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed particle data part and writes to
+!> a fortran unformatted file with spatial decomposition
+!! @param part = input data to be written
+!! @param npp = number of particles in partition
+!! @param  idimp = size of phase space = 4 or 5
+!! @param npmax = maximum number of particles in each partition
+!! @param iunit = fortran unit number
+!! @param iscr = unused unit number available for scratch file
       subroutine PPWRPART2(part,npp,idimp,npmax,iunit,iscr)
-! this subroutine collects distributed particle data part and writes to
-! a fortran unformatted file with spatial decomposition
-! part = input data to be written
-! npp = number of particles in partition
-! idimp = size of phase space = 4 or 5
-! npmax = maximum number of particles in each partition
-! iunit = fortran unit number
-! iscr = unused unit number available for scratch file
       implicit none
       integer, intent(in) :: npp, idimp, npmax, iunit, iscr
       real, intent(inout), dimension(idimp,npmax) :: part
@@ -2202,17 +2217,17 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads particle data part from a fortran unformatted
+!> file and distributes it with spatial decomposition
+!! @param part = output data to be read
+!! @param npp = number of particles in partition
+!! @param idimp = size of phase space = 4 or 5
+!! @param npmax = maximum number of particles in each partition
+!! @param iunit = fortran unit number
+!! @param iscr = unused unit number available for scratch file
+!! @param irc = error indicator
+!> input: all except part, npp, irc, output: part, npp, irc
       subroutine PPRDPART2(part,npp,idimp,npmax,iunit,iscr,irc)
-! this subroutine reads particle data part from a fortran unformatted
-! file and distributes it with spatial decomposition
-! part = output data to be read
-! npp = number of particles in partition
-! idimp = size of phase space = 4 or 5
-! npmax = maximum number of particles in each partition
-! iunit = fortran unit number
-! iscr = unused unit number available for scratch file
-! irc = error indicator
-! input: all except part, npp, irc, output: part, npp, irc
       implicit none
       integer, intent(in) :: idimp, npmax, iunit, iscr
       integer, intent(inout) :: npp, irc
@@ -2285,15 +2300,15 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic real 2d scalar data f
+!> and writes to a fortran unformatted file with spatial decomposition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param nxv = first dimension of data array f
+!! @param nypmx = second dimension of data array f
+!! @param iunit = fortran unit number
+!> input: all
       subroutine PPWRDATA2(f,g,nxv,nypmx,iunit)
-! this subroutine collects distributed periodic real 2d scalar data f
-! and writes to a fortran unformatted file with spatial decomposition
-! f = input data to be written
-! g = scratch data
-! nxv = first dimension of data array f
-! nypmx = second dimension of data array f
-! iunit = fortran unit number
-! input: all
       implicit none
       integer, intent(in) :: nxv, nypmx, iunit
       real, intent(in), dimension(nxv,nypmx) :: f
@@ -2336,16 +2351,16 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads periodic real 2d scalar data f from a fortran
+!> unformatted file and distributes it with spatial decomposition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param nxv = first dimension of data array f
+!! @param nypmx = second dimension of data array f
+!! @param iunit = fortran unit number
+!! @param irc = error indicator
+!> input: all, output: f, irc
       subroutine PPRDDATA2(f,g,nxv,nypmx,iunit,irc)
-! this subroutine reads periodic real 2d scalar data f from a fortran
-! unformatted file and distributes it with spatial decomposition
-! f = output data to be read
-! g = scratch data
-! nxv = first dimension of data array f
-! nypmx = second dimension of data array f
-! iunit = fortran unit number
-! irc = error indicator
-! input: all, output: f, irc
       implicit none
       integer, intent(in) :: nxv, nypmx, iunit
       integer, intent(inout) :: irc
@@ -2391,16 +2406,16 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic real 2d vector data f
+!> and writes to a fortran unformatted file with spatial decomposition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param ndim = first dimension of data array f
+!! @param nxv = second dimension of data array f
+!! @param nypmx = third dimension of data array f
+!! @param iunit = fortran unit number
+!> input: all
       subroutine PPWRVDATA2(f,g,ndim,nxv,nypmx,iunit)
-! this subroutine collects distributed periodic real 2d vector data f
-! and writes to a fortran unformatted file with spatial decomposition
-! f = input data to be written
-! g = scratch data
-! ndim = first dimension of data array f
-! nxv = second dimension of data array f
-! nypmx = third dimension of data array f
-! iunit = fortran unit number
-! input: all
       implicit none
       integer, intent(in) :: ndim, nxv, nypmx, iunit
       real, intent(in), dimension(ndim,nxv,nypmx) :: f
@@ -2443,17 +2458,17 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine reads periodic real 2d vector data f from a fortran
+!> unformatted file and distributes it with spatial decomposition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param ndim = first dimension of data array f
+!! @param nxv = second dimension of data array f
+!! @param nypmx = third dimension of data array f
+!! @param iunit = fortran unit number
+!! @param irc = error indicator
+!> input: all, output: f, irc
       subroutine PPRDVDATA2(f,g,ndim,nxv,nypmx,iunit,irc)
-! this subroutine reads periodic real 2d vector data f from a fortran
-! unformatted file and distributes it with spatial decomposition
-! f = output data to be read
-! g = scratch data
-! ndim = first dimension of data array f
-! nxv = second dimension of data array f
-! nypmx = third dimension of data array f
-! iunit = fortran unit number
-! irc = error indicator
-! input: all, output: f, irc
       implicit none
       integer, intent(in) :: ndim, nxv, nypmx, iunit
       integer, intent(inout) :: irc
@@ -2502,16 +2517,16 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic complex 2d vector data f
+!> and writes to a fortran unformatted file with spatial decomposition
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param ndim = first dimension of data array f
+!! @param nyv = second dimension of data array f
+!! @param kxpd = third dimension of data array f
+!! @param iunit = fortran unit number
+!> input: all
       subroutine PPWRVCDATA2(f,g,ndim,nyv,kxpd,iunit)
-! this subroutine collects distributed periodic complex 2d vector data f
-! and writes to a fortran unformatted file with spatial decomposition
-! f = input data to be written
-! g = scratch data
-! ndim = first dimension of data array f
-! nyv = second dimension of data array f
-! kxpd = third dimension of data array f
-! iunit = fortran unit number
-! input: all
       implicit none
       integer, intent(in) :: ndim, nyv, kxpd, iunit
       complex, intent(in), dimension(ndim,nyv,kxpd) :: f
@@ -2554,17 +2569,17 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
-      subroutine PPRDVCDATA2(f,g,ndim,nyv,kxpd,iunit,irc)
-! this subroutine reads periodic complex 2d vector data f from a fortran
-! unformatted file and distributes it with spatial decomposition
-! f = output data to be read
-! g = scratch data
-! ndim = first dimension of data array f
-! nyv = second dimension of data array f
-! kxpd = third dimension of data array f
-! iunit = fortran unit number
-! irc = error indicator
+!> this subroutine reads periodic complex 2d vector data f from a fortran
+!> unformatted file and distributes it with spatial decomposition
+!! @param f = output data to be read
+!! @param g = scratch data
+!! @param ndim = first dimension of data array f
+!! @param nyv = second dimension of data array f
+!! @param kxpd = third dimension of data array f
+!! @param iunit = fortran unit number
+!! @param irc = error indicator
 ! input: all, output: f, irc
+      subroutine PPRDVCDATA2(f,g,ndim,nyv,kxpd,iunit,irc)
       implicit none
       integer, intent(in) :: ndim, nyv, kxpd, iunit
       integer, intent(inout) :: irc
@@ -2613,14 +2628,14 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed test particle data
+!! @param partt = tagged particle coordinates
+!! @param numtp = number of test particles found on this node
+!! @param idimp = size of phase space = 5 or 6
+!! @param nprobt = number of test charges whose trajectories will be stored.
+!! @param irc = error indicator
+!> input: all, output: partt, irc
       subroutine PPARTT2(partt,numtp,idimp,nprobt,irc)
-! this subroutine collects distributed test particle data
-! partt = tagged particle coordinates
-! numtp = number of test particles found on this node
-! idimp = size of phase space = 5 or 6
-! nprobt = number of test charges whose trajectories will be stored.
-! irc = error indicator
-! input: all, output: partt, irc
       implicit none
       integer, intent(in) :: numtp, idimp, nprobt
       integer, intent(inout) :: irc
@@ -2668,19 +2683,19 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> for 2-1/2d code, this subroutine adjusts 3d velocity distribution, in
+!> different regions of space, so that partial regions have equal amounts
+!> of spatial grid points
+!> input: all except gvs, output: fvs, gvs
+!! @param fvs = spatially resolved distribution function
+!! @param gvs = scratch array
+!! @param noff = lowermost global gridpoint in particle partition.
+!! @param nyp = number of primary (complete) gridpoints in particle partition
+!! @param ndim = number of velocity dimensions = 2 or 3
+!! @param mvy = number of grids in y for phase space aggregation
+!! @param nxb/nyb = number of segments in x/y for velocity distribution
+!! @param nmvf = first dimension of fvs
       subroutine PPADJFVS2(fvs,gvs,noff,nyp,ndim,nmv,mvy,nxb,nyb,nmvf)
-! for 2-1/2d code, this subroutine adjusts 3d velocity distribution, in
-! different regions of space, so that partial regions have equal amounts
-! of spatial grid points
-! input: all except gvs, output: fvs, gvs
-! fvs = spatially resolved distribution function
-! gvs = scratch array
-! noff = lowermost global gridpoint in particle partition.
-! nyp = number of primary (complete) gridpoints in particle partition
-! ndim = number of velocity dimensions = 2 or 3
-! mvy = number of grids in y for phase space aggregation
-! nxb/nyb = number of segments in x/y for velocity distribution
-! nmvf = first dimension of fvs
       implicit none
       integer, intent(in) :: noff, nyp
       integer, intent(in) :: ndim, nmv, mvy, nxb, nyb, nmvf
@@ -2759,17 +2774,17 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> this subroutine collects distributed periodic real 2d vector
+!> non-uniform data f and writes to a fortran unformatted file
+!! @param f = input data to be written
+!! @param g = scratch data
+!! @param ndim = first dimension of data array f
+!! @param nyp = actual data written for third dimension
+!! @param nxv = second dimension of data array f
+!! @param nypmx = third dimension of data array f
+!! @param iunit = fortran unit number
+!> input: all
       subroutine PPWRVNDATA2(f,g,ndim,nxv,nyp,nypmx,iunit)
-! this subroutine collects distributed periodic real 2d vector
-! non-uniform data f and writes to a fortran unformatted file
-! f = input data to be written
-! g = scratch data
-! ndim = first dimension of data array f
-! nyp = actual data written for third dimension
-! nxv = second dimension of data array f
-! nypmx = third dimension of data array f
-! iunit = fortran unit number
-! input: all
       implicit none
       integer, intent(in) :: ndim, nxv, nyp, nypmx, iunit
       real, intent(in), dimension(ndim,nxv,nyp) :: f
