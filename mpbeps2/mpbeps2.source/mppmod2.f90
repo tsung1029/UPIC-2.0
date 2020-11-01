@@ -138,8 +138,9 @@
       contains
 !
 !-----------------------------------------------------------------------
+!> copies scalar data to guard cells in non-uniform partitions
       subroutine mpcguard2(f,nyp,tguard,kstrt,nvp)
-! copies scalar data to guard cells in non-uniform partitions
+
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp
       real, intent(inout) :: tguard
@@ -160,8 +161,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> copies vector data to guard cells in non-uniform partitions
       subroutine mpncguard2(f,nyp,tguard,kstrt,nvp)
-! copies vector data to guard cells in non-uniform partitions
+
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp
       real, intent(inout) :: tguard
@@ -182,8 +184,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> adds scalar data from guard cells in non-uniform partitions
       subroutine mpnaguard2(f,nyp,tguard,nx,kstrt,nvp)
-! adds scalar data from guard cells in non-uniform partitions
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp, nx
       real, intent(inout) :: tguard
@@ -211,8 +213,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> adds vector data from guard cells in non-uniform partitions
       subroutine mpnacguard2(f,nyp,tguard,nx,kstrt,nvp)
-! adds vector data from guard cells in non-uniform partitions
       implicit none
       integer, intent(in) :: nyp, kstrt, nvp, nx
       real, intent(inout) :: tguard
@@ -240,9 +242,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> field manager: moves scalar grids into appropriate spatial regions
       subroutine mpfmove2(f,noff,nyp,isign,tfmov,kyp,ny,kstrt,nvp,mter, &
      &ierr)
-! field manager: moves scalar grids into appropriate spatial regions
       implicit none
       integer, intent(in) :: noff, nyp, isign, kyp, ny, kstrt, nvp
       integer, intent(inout) :: mter, ierr
@@ -281,9 +283,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> field manager: moves vector grids into appropriate spatial regions
       subroutine mpfnmove2(f,noff,nyp,isign,tfmov,kyp,ny,kstrt,nvp,mter,&
      &ierr)
-! field manager: moves vector grids into appropriate spatial regions
       implicit none
       integer, intent(in) :: noff, nyp, isign, kyp, ny, kstrt, nvp
       integer, intent(inout) :: mter, ierr
@@ -322,9 +324,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> particle manager: moves particles into appropriate spatial regions
       subroutine ipmove2(part,edges,npp,iholep,ny,tmov,kstrt,nvp,ndim,nc&
      &,ierr)
-! particle manager: moves particles into appropriate spatial regions
       implicit none
       integer, intent(in) :: ny, kstrt, nvp, ndim, nc
       real, intent(inout) :: tmov
@@ -376,9 +378,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> tiled particle manager: moves particles into appropriate tiles
       subroutine mpmove2(sbufr,sbufl,rbufr,rbufl,ncll,nclr,mcll,mclr,   &
      &tmov,kstrt,nvp)
-! tiled particle manager: moves particles into appropriate tiles
       implicit none
       integer, intent(in) :: kstrt, nvp
       real, intent(inout) :: tmov
@@ -432,8 +434,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> finds parallel sum for each element of a double precision 1d vector
       subroutine mpdsum(f,tdiag)
-! finds parallel sum for each element of a double precision 1d vector
       implicit none
       real, intent(inout) :: tdiag
       double precision, dimension(:), intent(inout) :: f
@@ -460,9 +462,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> finds parallel maximum for each element of a double precision 1d
+!> vector
       subroutine mpdmax(f,tdiag)
-! finds parallel maximum for each element of a double precision 1d
-! vector
       implicit none
       real, intent(inout) :: tdiag
       double precision, dimension(:), intent(inout) :: f
@@ -489,8 +491,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> finds parallel sum for each element of a real 2d vector
       subroutine mpsum2(f,tdiag)
-! finds parallel sum for each element of a real 2d vector
       implicit none
       real, intent(inout) :: tdiag
       real, dimension(:,:), intent(inout) :: f
@@ -517,8 +519,8 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> finds parallel maximum for each element of an integer vector
       subroutine mpimax(if,tmov)
-! finds parallel maximum for each element of an integer vector
       implicit none
       real, intent(inout) :: tmov
       integer, dimension(:), intent(inout) :: if
@@ -545,9 +547,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects a subset of a distributed real 2d scalar array and writes it
+!> to a direct access binary file, for uniform partitions
       subroutine mpwrite2(f,tdiag,nx,ny,kyp,iunit,nrec)
-! collects a subset of a distributed real 2d scalar array and writes it
-! to a direct access binary file, for uniform partitions
       implicit none
       integer, intent(in) :: nx, ny, kyp, iunit
       integer, intent(inout) :: nrec
@@ -577,9 +579,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads a real 2d scalar array from a direct access binary file and
+!> distributes it, for uniform partitions
       subroutine mpread2(f,tdiag,nx,ny,kyp,iunit,nrec,irc)
-! reads a real 2d scalar array from a direct access binary file and
-! distributes it, for uniform partitions
       implicit none
       integer, intent(in) :: nx, ny, kyp, iunit
       integer, intent(inout) :: nrec, irc
@@ -613,9 +615,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects a subset of a distributed real 2d vector array and writes it
+!> to a direct access binary file, for uniform partitions
       subroutine mpvwrite2(f,tdiag,nx,ny,kyp,iunit,nrec)
-! collects a subset of a distributed real 2d vector array and writes it
-! to a direct access binary file, for uniform partitions
+
       implicit none
       integer, intent(in) :: nx, ny, kyp, iunit
       integer, intent(inout) :: nrec
@@ -645,9 +648,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads a real 2d vector array from a direct access binary file and
+!> distributes it, for uniform partitions
       subroutine mpvread2(f,tdiag,nx,ny,kyp,iunit,nrec,irc)
-! reads a real 2d vector array from a direct access binary file and
-! distributes it, for uniform partitions
       implicit none
       integer, intent(in) :: nx, ny, kyp, iunit
       integer, intent(inout) :: nrec, irc
@@ -681,9 +684,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects a subset of a distributed complex 2d scalar array and writes
+!> it to a direct access binary file, for uniform partitions
       subroutine mpcwrite2(f,tdiag,nx,ny,kxp,iunit,nrec)
-! collects a subset of a distributed complex 2d scalar array and writes
-! it to a direct access binary file, for uniform partitions
+
       implicit none
       integer, intent(in) :: nx, ny, kxp, iunit
       integer, intent(inout) :: nrec
@@ -713,9 +717,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads a complex 2d scalar array from a direct access binary file and
+!> distributes it, for uniform partitions
       subroutine mpcread2(f,tdiag,nx,ny,kxp,iunit,nrec,irc)
-! reads a complex 2d scalar array from a direct access binary file and
-! distributes it, for uniform partitions
       implicit none
       integer, intent(in) :: nx, ny, kxp, iunit
       integer, intent(inout) :: nrec, irc
@@ -749,9 +753,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects a subset of a distributed complex 2d vector array and writes
+!> it to a direct access binary file, for uniform partitions
       subroutine mpvcwrite2(f,tdiag,nx,ny,kxp,iunit,nrec)
-! collects a subset of a distributed complex 2d vector array and writes
-! it to a direct access binary file, for uniform partitions
       implicit none
       integer, intent(in) :: nx, ny, kxp, iunit
       integer, intent(inout) :: nrec
@@ -781,9 +785,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads a complex 2d vector array from a direct access binary file and
+!> distributes it, for uniform partitions
       subroutine mpvcread2(f,tdiag,nx,ny,kxp,iunit,nrec,irc)
-! reads a complex 2d vector array from a direct access binary file and
-! distributes it, for uniform partitions
+
       implicit none
       integer, intent(in) :: nx, ny, kxp, iunit
       integer, intent(inout) :: nrec, irc
@@ -817,9 +822,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed particle data and writes to a fortran unformatted
+!> file
       subroutine mpwrpart2(part,tdiag,npp,iunit,iscr)
-! collects distributed particle data and writes to a fortran unformatted
-! file
+
       implicit none
       integer, intent(in) :: npp, iunit, iscr
       real, intent(inout) :: tdiag
@@ -840,8 +846,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads particle data from a fortran unformatted file and distributes
+!> it
       subroutine mprdpart2(part,tdiag,npp,iunit,iscr,irc)
-! reads particle data from a fortran unformatted file and distributes it
       implicit none
       integer, intent(in) :: iunit, iscr
       integer, intent(inout) :: npp, irc
@@ -863,9 +870,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed real scalar field data and writes to a fortran
+!> unformatted file
       subroutine mpwrdata2(f,tdiag,iunit)
-! collects distributed real scalar field data and writes to a fortran
-! unformatted file
       implicit none
       integer, intent(in) :: iunit
       real, intent(inout) :: tdiag
@@ -893,9 +900,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads real scalar field data from a fortran unformatted file and
+!> distributes it
       subroutine mprddata2(f,tdiag,iunit,irc)
-! reads real scalar field data from a fortran unformatted file and
-! distributes it
       implicit none
       integer, intent(in) :: iunit
       integer, intent(inout) :: irc
@@ -924,9 +931,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed real vector field data and writes to a fortran
+!> unformatted file
       subroutine mpwrvdata2(f,tdiag,iunit)
-! collects distributed real vector field data and writes to a fortran
-! unformatted file
       implicit none
       integer, intent(in) :: iunit
       real, intent(inout) :: tdiag
@@ -954,9 +961,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads real vector field data from a fortran unformatted file and
+!> distributes it
       subroutine mprdvdata2(f,tdiag,iunit,irc)
-! reads real vector field data from a fortran unformatted file and
-! distributes it
       implicit none
       integer, intent(in) :: iunit
       integer, intent(inout) :: irc
@@ -985,9 +992,10 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed complex vector field data and writes to a fortran
+!> unformatted file
       subroutine mpwrvcdata2(f,tdiag,iunit)
-! collects distributed complex vector field data and writes to a fortran
-! unformatted file
+
       implicit none
       integer, intent(in) :: iunit
       real, intent(inout) :: tdiag
@@ -1015,9 +1023,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> reads complex vector field data from a fortran unformatted file and
+!> distributes it
       subroutine mprdvcdata2(f,tdiag,iunit,irc)
-! reads complex vector field data from a fortran unformatted file and
-! distributes it
       implicit none
       integer, intent(in) :: iunit
       integer, intent(inout) :: irc
@@ -1046,8 +1054,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed test particle data
       subroutine mppartt2(partt,tdiag,numtp,irc)
-! collects distributed test particle data
+
       implicit none
       integer, intent(in) :: numtp
       integer, intent(inout) :: irc
@@ -1071,8 +1080,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> adjusts 3d velocity distribution in different regions of space
       subroutine mpadjfvs2(fvs,tdiag,noff,nyp,nmv,mvy)
-! adjusts 3d velocity distribution in different regions of space
+
       implicit none
       integer, intent(in) :: noff, nyp, nmv, mvy
       real, intent(inout) :: tdiag
@@ -1101,9 +1111,9 @@
       end subroutine
 !
 !-----------------------------------------------------------------------
+!> collects distributed 4d real vector non-uniform data and writes to a
+!> fortran unformatted file
       subroutine mpwrfvsdata2(fvs,tdiag,nyp,nypmx,iunit)
-! collects distributed 4d real vector non-uniform data and writes to a
-! fortran unformatted file
       implicit none
       integer, intent(in) :: iunit, nyp, nypmx
       real, intent(inout) :: tdiag
