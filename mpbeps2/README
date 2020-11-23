@@ -159,3 +159,10 @@ pfvreadf2.py ptreadf2.py or psreadf2.py
 To delete the library and the files in the mbeps2 directory, execute:
 
 make readfclobber
+
+
+## Notes on Generating HDF5 output:
+
+Currently Viktor dumps field/particle data in binary which can depend on the architecture (Big Endian/Little Endian) and the compiler.  We want to change that by making the code dump in a machine independent format, e.g., HDF5.  Currently, the field data is being dumped by the subroutine mpwrite2, mpwrite3, mpwrpart2(), mpwrpart3(), etc..  We want to replace these write statements with its HDF5 equivalent.
+
+Fortunately, this has been done on upic-emma 2.0 and also a branch of QuickPIC.  We will port it to UPIC-2.0 as a branch for testing.
