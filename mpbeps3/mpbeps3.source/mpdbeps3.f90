@@ -8,9 +8,9 @@
       use mbpush3
       use mcurd3
       use mdpush3
-      use mextdriv3
       use mfield3
       use mdiag3
+      use mextdriv3
       use mppmod3
       use omplib
       use ompplib3
@@ -87,7 +87,8 @@
 ! exyze = smoothed total electric field with guard cells
 ! fxyze = smoothed longitudinal electric field with guard cells
 ! bxyze = smoothed magnetic field with guard cells
-      real, dimension(:,:,:,:), allocatable :: fxyze, exyze, bxyze,fext
+! fext  = external force added to e field in pusher
+      real, dimension(:,:,:,:), allocatable :: fxyze, exyze, bxyze, fext
 ! qt = scalar charge density field array in fourier space
       complex, dimension(:,:,:), allocatable :: qt
 ! cut = vector current density field arrays in fourier space
@@ -1511,11 +1512,7 @@
 ! cus needs to be retained for next time step
       call mpaddvrfield3(exyze,cus,fxyze,tfield)
 !
-!
       enddo
-!
-
-
 !
 ! potential diagnostic
       if (ntp > 0) then
@@ -1933,32 +1930,22 @@
          endif
       endif
 !
-!
-! add external driver: updates fext which is added to exyze in pusher
-      select case (driver_select)
+! Add external force
+      select case(driver_select)
       case (0)
-              call donothing()
+         call donothing()
       case (1)
-              call laguerregaussiandriv(fext, real(ntime)*dt, nx, nxe,&
-             &ny, nypmx, nz, nzpmx, nvpy, nvpz, idproc)
-      case (2)
-              call gaussiandriv(fext, real(ntime)*dt, nx, nxe, &
-             &ny,nypmx,nz, nzpmx, nvpy, nvpz, idproc)
-      case (3)
-              call planewavedriv(fext, real(ntime)*dt, nx, nxe,&
-             &ny,nypmx,nz,nzpmx,nvpy,nvpz,idproc)
+         call planewavedriv(fext,real(ntime)*dt,nx,nxe,nvp,idproc)
       case default
-              print*, "driver_select = ", driver_select, "is not yet",&
-      &" implemented."
+         print*, "External driver ", driver_select, " not implemented."
       end select
 !
 ! push electrons with OpenMP:
 ! updates ppart and wke, and possibly ncl, ihole, irc
       wke = 0.0
       call wmpbpush3(ppart,exyze+fext,bxyze,kpic,ncl,ihole,noff,nyzp,&
-     &qbme,dt,&
-     &dt,ci,wke,tpush,nx,ny,nz,mx,my,mz,mx1,myp1,ipbc,popt,relativity,  &
-     &plist,irc)
+     &qbme,dt,dt,ci,wke,tpush,nx,ny,nz,mx,my,mz,mx1,myp1,ipbc,popt,&
+     &relativity, plist,irc)
 !
 ! reorder electrons by tile with OpenMP and MPI
 ! updates: ppart, kpic, and irc and possibly ncl and ihole
